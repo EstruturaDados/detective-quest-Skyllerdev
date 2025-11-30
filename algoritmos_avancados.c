@@ -1,9 +1,84 @@
 #include <stdio.h>
-
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
 // Desafio Detective Quest
 // Tema 4 - Árvores e Tabela Hash
 // Este código inicial serve como base para o desenvolvimento das estruturas de navegação, pistas e suspeitos.
 // Use as instruções de cada região para desenvolver o sistema completo com árvore binária, árvore de busca e tabela hash.
+
+#define MAX 50
+
+typedef struct salas {
+    char nome[MAX];
+    struct salas* esquerda;
+    struct salas* direita;
+} salas;
+
+salas* criarSala(const char* nome) {
+    salas* nova = malloc(sizeof(salas));
+    if (!nova) {
+        printf("Erro ao alocar sala!\n");
+        exit(1);
+    }
+
+    strcpy(nova->nome, nome);
+    nova->esquerda = NULL;
+    nova->direita = NULL;
+
+    return nova;
+}
+
+salas* conectarSalas() {
+    salas* entrada = criarSala("Entrada");
+    salas* quarto = criarSala("Quarto");
+    salas* banheiro = criarSala("Banheiro");
+    salas* sala = criarSala("Sala");
+    salas* jardim = criarSala("Jardim");
+    salas* cozinha = criarSala("Cozinha");
+    salas* escritorio = criarSala("Escritorio");
+
+    entrada->esquerda = sala;
+    entrada->direita = escritorio;
+
+    sala->esquerda = quarto;
+    sala->direita = cozinha;
+
+    escritorio->esquerda = banheiro;
+    escritorio->direita = jardim;
+
+    //Raiz da arvore
+    return entrada;
+}
+
+void explorarSalas(salas* atual) {
+    char opcao;
+    while (1) {
+
+        if (atual->esquerda == NULL && atual->direita == NULL) {
+            printf("Acabou as salas.\n");
+            printf("Última sala: %s\n", atual->nome);
+            return;
+        }
+
+        printf("Você está no cômodo: %s\n", atual->nome);
+        printf("Você pode ir para a Esquerda (E), Direita (D) ou Sair (S)!\n");
+        printf("Opção: ");
+        scanf(" %c", &opcao);
+        opcao = tolower(opcao);
+        salas* proxima = NULL;
+        switch(opcao){
+            case 's': printf("Saindo do programa...\n"); return;
+            case 'e': proxima = atual->esquerda; break;
+            case 'd': proxima = atual->direita; break;
+            default: printf("Opção inválida.\n"); continue;
+        }
+        if (proxima)
+            atual = proxima;
+        else
+            printf("Caminho inexistente.\n");
+    }
+}
 
 int main() {
 
@@ -17,6 +92,9 @@ int main() {
     // - Exiba o nome da sala a cada movimento.
     // - Use recursão ou laços para caminhar pela árvore.
     // - Nenhuma inserção dinâmica é necessária neste nível.
+
+    salas* mapa = conectarSalas();
+    explorarSalas(mapa);
 
     // 🔍 Nível Aventureiro: Armazenamento de Pistas com Árvore de Busca
     //
